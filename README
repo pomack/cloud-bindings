@@ -1,0 +1,10 @@
+Cloud Bindings will be written in CoffeeScript and compiled to JavaScript and provide access to the following APIs:
+Amazon S3
+Amazon SQS
+Amazon EC2
+Rackspace Cloud Files
+Rackspace Cloud Servers
+
+Dependencies:
+Google Closure Library
+CoffeeScript and node.js if you want/need CoffeeScript

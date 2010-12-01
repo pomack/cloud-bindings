@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2006 The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by an Apache 2.0 License.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Closure Unit Tests - aws.util</title>
+<script src="../goog/base.js"></script>
+<script src="./util.js"></script>
+<script src="http://s3.amazonaws.com/doc/s3-example-code/post/sha1.js"></script>
+<script>
+  goog.require('goog.crypt');
+  goog.require('goog.crypt.base64');
+  goog.require('aws.util');
+  goog.require('goog.testing.jsunit');
+  goog.require('goog.testing.recordFunction');
+</script>
+</head>
+<body>
+<script>
+
+var awsSecretAccessKey = "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o";
+function setUp() {
+}
+
+function tearDown() {
+}
+
+function testSignatureHmacSha1EncodeObjectGet1() {
+  assertEquals("xXjDGYUmKxnwqr5KXNPGldn5LbA=", aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "GET\n\n\nTue, 27 Mar 2007 19:36:42 +0000\n/johnsmith/photos/puppy.jpg"));
+}
+
+function testSignatureHmacSha1EncodeObjectPut1() {
+  var key = awsSecretAccessKey;
+  var data = "PUT\n\nimage/jpeg\nTue, 27 Mar 2007 21:15:45 +0000\n/johnsmith/photos/puppy.jpg";
+  var result = "hcicpDDvL9SsO6AkvxqmIWkmOuQ=";
+  assertEquals(b64_hmac_sha1(key, data), result);
+  assertEquals(aws.util.HmacSha1.encodeToString(key, data), result);
+}
+
+function testSignatureHmacSha1EncodeList() {
+  assertEquals(aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "GET\n\n\nTue, 27 Mar 2007 19:42:41 +0000\n/johnsmith/"), "jsRt/rhG+Vtp88HrYL706QhE4w4=");
+}
+
+function testSignatureHmacSha1EncodeFetch() {
+  assertEquals(aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "GET\n\n\nTue, 27 Mar 2007 19:44:46 +0000\n/johnsmith/?acl"), "thdUi9VAkzhkniLj96JIrOPGi0g=");
+}
+
+function testSignatureHmacSha1EncodeDelete() {
+  var key = awsSecretAccessKey;
+  var data = "DELETE\n\n\n\nx-amz-date:Tue, 27 Mar 2007 21:20:26 +0000\n/johnsmith/photos/puppy.jpg";
+  var result = "k3nL7gH3+PadhTEVn5Ip83xlYzk=";
+  assertEquals(aws.util.HmacSha1.encodeToString(key, data), result);
+}
+
+function testSignatureHmacSha1EncodeUpload() {
+  assertEquals(aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "PUT\n4gJE4saaMU4BqNR0kLY+lw==\napplication/x-download\nTue, 27 Mar 2007 21:06:08 +0000\nx-amz-acl:public-read\nx-amz-meta-checksumalgorithm:crc32\nx-amz-meta-filechecksum:0x02661779\nx-amz-meta-reviewedby:joe@johnsmith.net,jane@johnsmith.net\n/static.johnsmith.net/db-backup.dat.gz"), "C0FlOtU8Ylb9KDTpZqYkZPX91iI=");
+}
+
+function testSignatureHmacSha1EncodeListAllMyBuckets() {
+  assertEquals(aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "GET\n\n\nWed, 28 Mar 2007 01:29:59 +0000\n/"), "Db+gepJSUbZKwpx1FR0DLtEYoZA=");
+}
+
+function testSignatureHmacSha1EncodeUnicodeKeys() {
+  assertEquals(aws.util.HmacSha1.encodeToString(awsSecretAccessKey, "GET\n\n\nWed, 28 Mar 2007 01:49:49 +0000\n/dictionary/fran%C3%A7ais/pr%c3%a9f%c3%a8re"), "dxhSBHoI6eVSPcXJqEghlUzZMnY=");
+}
+
+function assertArraysEqual(arr1, arr2) {
+  assertEquals('Expected length ' + arr1.length, arr1.length, arr2.length);
+  for (var i = 0; i < arr1.length; i++) {
+    assertEquals(arr1[i] + ' expected at position ' + i,  arr1[i], arr2[i]);
+  }
+}
+
+</script>
+</body>
+</html>
