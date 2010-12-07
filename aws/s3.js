@@ -39,6 +39,7 @@
   goog.require('goog.array');
   goog.require('goog.date');
   goog.require('goog.date.DateTime');
+  goog.require('goog.date.UtcDateTime');
   goog.require('goog.iter');
   goog.require('goog.string');
   goog.require('goog.structs.Map');
